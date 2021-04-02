@@ -1,4 +1,6 @@
 #!/usr/bin/python2
+### Script made by Rob Hassing (rob.hassing@deltics.nl) 01-04-2021
+
 import json
 import sys
 import getopt
