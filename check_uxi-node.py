@@ -20,6 +20,7 @@ try:
     arguments, values = getopt.getopt(argument_list, short_options, long_options)
 except getopt.error as err:
     # Output error, and return with an error code
+    print ("Display help!!!")
     print (str(err))
     sys.exit(2)
 
@@ -28,7 +29,8 @@ for current_argument, current_value in arguments:
     if current_argument in ("-v", "--verbose"):
         print ("Enabling verbose mode")
     elif current_argument in ("-h", "--help"):
-        print ("Displaying help")
+        print ("Usage: check_uxi-node -u https://api.capenetworks.com/v1/nodes/ -n <node-id> -i <APP id> -k <APP Key>")
+        sys.exit(2)
     elif current_argument in ("-n", "--node"):
         node = (current_value)
 #        if(len(node) == 0):
