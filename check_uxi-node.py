@@ -43,10 +43,20 @@ for current_argument, current_value in arguments:
         url = (current_value)
 
 
-url = "https://api.capenetworks.com/v1/nodes/"
+#url = "https://api.capenetworks.com/v1/nodes/"
 url2 = url+node
 headers = {'accept': 'application/json', 'X-API-KEY': appkey, 'X-APP-ID': appids}
-t = requests.get(url2, headers=headers)
+
+try:
+    t = requests.get(url2, headers=headers)
+except requests.exceptions.Timeout:
+    print("Timeout on URL")
+except requests.exceptions.TooManyRedirects:
+    print("Too many redirects")
+except requests.exceptions.RequestException as e:
+    # catastrophic error. bail.
+    raise SystemExit(e)
+
 r_dictionary= t.json()
 
 for p in r_dictionary['payload']['state_summary']['sensors']:
