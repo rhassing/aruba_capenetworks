@@ -66,10 +66,11 @@ for p in r_dictionary['payload']['state_summary']['sensors']:
         state = p['state']
         if state == "good":
             print("OK: " + str(name), " status is: " + str(state))
-#            status = OK
             sys.exit(0)
+        elif state == "warning":
+            print("WARNING: " + str(name), " status is: " + str(state))
+            sys.exit(1)
         else:
             print("CRITICAL: " + str(name), "status is " + str(state))
-#            status = CRITICAL
             sys.exit(2)
 
