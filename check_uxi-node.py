@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 ### Script made by Rob Hassing (rob.hassing@deltics.nl) 01-04-2021
 
 import json
@@ -65,9 +65,11 @@ for p in r_dictionary['payload']['state_summary']['sensors']:
         name = p['name']
         state = p['state']
         if state == "good":
-#            print("OK:" + str(name), "status is:", + str(state))
-            print "OK: " + str(name), " status is: " + str(state)
+            print("OK: " + str(name), " status is: " + str(state))
+#            status = OK
             sys.exit(0)
         else:
-            print "CRITICAL: " + str(name), "status is " + str(state)
+            print("CRITICAL: " + str(name), "status is " + str(state))
+#            status = CRITICAL
             sys.exit(2)
+
