@@ -61,6 +61,7 @@ except requests.exceptions.RequestException as e:
 
 r_dictionary= t.json()
 
+# print(r_dictionary)
 for p in r_dictionary['payload']['state_summary']['sensors']:
         name = p['name']
         state = p['state']
@@ -68,9 +69,15 @@ for p in r_dictionary['payload']['state_summary']['sensors']:
             print("OK: " + str(name), " status is: " + str(state))
             sys.exit(0)
         elif state == "warning":
-            print("WARNING: " + str(name), " status is: " + str(state))
-            sys.exit(1)
+            for w in r_dictionary['payload']['issue_summary']:
+                code = w['code']
+                desc = w['description']
+                print("WARNING: " + str(name), " status is: " + str(state))
+                sys.exit(1)
         else:
-            print("CRITICAL: " + str(name), "status is " + str(state))
-            sys.exit(2)
+            for c in r_dictionary['payload']['issue_summary']:
+                code = c['code']
+                desc = c['description']
+                print("CRITICAL: " + str(name), "status is " + str(state), " - Description: " + str(desc))
+                sys.exit(2)
 
