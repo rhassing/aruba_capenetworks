@@ -24,10 +24,12 @@ except getopt.error as err:
     print (str(err))
     sys.exit(2)
 
+verbose = False
 # Evaluate given options
 for current_argument, current_value in arguments:
     if current_argument in ("-v", "--verbose"):
         print ("Enabling verbose mode")
+        verbose = True
     elif current_argument in ("-h", "--help"):
         print ("Usage: check_uxi-node -u https://api.capenetworks.com/v1/nodes/ -n <node-id> -i <APP id> -k <APP Key>")
         sys.exit(2)
@@ -61,7 +63,9 @@ except requests.exceptions.RequestException as e:
 
 r_dictionary= t.json()
 
-# print(r_dictionary)
+if verbose == True:
+   print(r_dictionary)
+
 for p in r_dictionary['payload']['state_summary']['sensors']:
         name = p['name']
         state = p['state']
@@ -72,7 +76,7 @@ for p in r_dictionary['payload']['state_summary']['sensors']:
             for w in r_dictionary['payload']['issue_summary']:
                 code = w['code']
                 desc = w['description']
-                print("WARNING: " + str(name), " status is: " + str(state))
+                print("WARNING: " + str(name), " status is: " + str(state), " - Description: " + str(desc))
                 sys.exit(1)
         else:
             for c in r_dictionary['payload']['issue_summary']:
