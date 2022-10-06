@@ -53,6 +53,7 @@ headers = {'accept': 'application/json', 'X-API-KEY': appkey, 'X-APP-ID': appids
 
 try:
     t = requests.get(url2, headers=headers)
+
 except requests.exceptions.Timeout:
     print("Timeout on URL")
 except requests.exceptions.TooManyRedirects:
@@ -61,27 +62,47 @@ except requests.exceptions.RequestException as e:
     # catastrophic error. bail.
     raise SystemExit(e)
 
+if t.status_code == 404:
+    print("Resource Not Found")
+    sys.exit(1)
+
 r_dictionary= t.json()
+
+
+ok_msg = []
+warnings = []
+criticals = []
 
 if verbose == True:
    print(r_dictionary)
-
-for p in r_dictionary['payload']['state_summary']['sensors']:
-        name = p['name']
-        state = p['state']
-        if state == "good":
-            print("OK: " + str(name), " status is: " + str(state))
-            sys.exit(0)
-        elif state == "warning":
-            for w in r_dictionary['payload']['issue_summary']:
-                code = w['code']
-                desc = w['description']
-                print("WARNING: " + str(name), " status is: " + str(state), " - Description: " + str(desc))
-                sys.exit(1)
-        else:
-            for c in r_dictionary['payload']['issue_summary']:
-                code = c['code']
-                desc = c['description']
-                print("CRITICAL: " + str(name), "status is " + str(state), " - Description: " + str(desc))
-                sys.exit(2)
+if 'status' not in r_dictionary:
+    for p in r_dictionary['payload']['state_summary']['sensors']:
+            name = p['name']
+            state = p['state']
+            if state == "good":
+                ok_msg.append(f"OK: {str(name)}, status is: {str(state)}")
+            elif state == "warning":
+                for w in r_dictionary['payload']['issue_summary']:
+                    code = w['code']
+                    desc = w['description']
+                    warnings.append(f"WARNING: {str(name)}, status is: {str(state)}, Description: {str(desc)}")
+            else:
+                for c in r_dictionary['payload']['issue_summary']:
+                    code = c['code']
+                    desc = c['description']
+                    criticals.append(f"CRITICAL: {str(name)} status is {str(state)} Description: {str(desc)}")
+    if len(criticals) > 0:
+        print('\n'.join(criticals))
+        print('\n'.join(warnings))
+        print('\n'.join(ok_msg))
+        sys.exit(2)
+    elif len(warnings) > 0:
+        print('\n'.join(warnings))
+        print('\n'.join(ok_msg))
+        sys.exit(1)
+    else:
+        print('\n'.join(ok_msg))
+        sys.exit(0)
+elif r_dictionary['status']==500:
+    print("WARNING: " + "error conecting to api statuscode is: " + str(r_dictionary['status']))
 
